@@ -1,6 +1,9 @@
 
-import utils
+import re, os
 from webdav3.client import Client
+from datetime import datetime
+
+import utils
 
 # Loading configuration file
 conf = utils.load_pass_file("pass.json")
@@ -16,17 +19,20 @@ options = {
 
 root_dir = conf['vault_name'] + '/'
 vault = Client(options)
+notfications = []
+today = datetime.today().strftime('%Y-%m-%d')
 
+# Check that root folder exists
 if not vault.check(root_dir):
     print(f'Folder "{root_dir}" does not exist at WebDav vault')
 
 def look_dirs(base_dir: str):
+    '''
+    Function for recursively looking for .md files in folders
+    '''
     items = vault.list(base_dir)
-    # print(f'Look up in "{base_dir}": {items}')
     for item in items:
-        # item is note
-        # need to download and look up for tags
-        # print(item[-3::])
+        # item is .md file
         if item[-3::] == '.md':
             print(f'Found .md file: {item}')
             check_notifications(vault, base_dir + item)
@@ -36,13 +42,25 @@ def look_dirs(base_dir: str):
             look_dirs(base_dir + item)
 
 def check_notifications(server, filename: str):
+    '''
+    Downloads file and look up notification template in them
+    '''
     server.download_sync(remote_path=filename, local_path=tmp_file_name)
-    exit()
+
+    with open(tmp_file_name, 'r', encoding="utf8") as file: lines = file.read()
+    result = re.findall(
+        r"- \[r\](.*)\(@(\d{4}-\d{2}-\d{2})\)",
+        lines
+    )
+
+    for notify in result:
+        if notify[1] == today:
+            notfications.append(notify[0].strip())
+
+    os.remove(tmp_file_name)
 
 look_dirs(root_dir)
 
-#TODO: download file and search tags in there
-
 #TODO: send messages
+print(notfications)
 
-#TODO: проверка существования временного каталога
