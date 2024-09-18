@@ -1,8 +1,8 @@
-
-import re, os
 from webdav3.client import Client
 from datetime import datetime
-
+from telebot import TeleBot
+from random_unicode_emoji import random_emoji
+import re, os
 import utils
 
 # Loading configuration file
@@ -34,11 +34,11 @@ def look_dirs(base_dir: str):
     for item in items:
         # item is .md file
         if item[-3::] == '.md':
-            print(f'Found .md file: {item}')
+            # print(f'Found .md file: {item}')
             check_notifications(vault, base_dir + item)
         # item is directory
         if item[-1] == '/':
-            print(f'Found directory: {item}')
+            # print(f'Found directory: {item}')
             look_dirs(base_dir + item)
 
 def check_notifications(server, filename: str):
@@ -61,6 +61,10 @@ def check_notifications(server, filename: str):
 
 look_dirs(root_dir)
 
-#TODO: send messages
-print(notfications)
+# print(notfications)
 
+# Sending messages via Telegram
+bot = TeleBot(conf['bot_id'])
+
+for notify in notfications: 
+    bot.send_message(chat_id=conf['user_id'], text=random_emoji()[0] + ' ' + notify)
