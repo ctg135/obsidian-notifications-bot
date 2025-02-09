@@ -49,7 +49,7 @@ def check_notifications(server, filename: str):
 
     with open(tmp_file_name, 'r', encoding="utf8") as file: lines = file.read()
     result = re.findall(
-        r"- \[r\](.*)\(@(\d{4}-\d{2}-\d{2})\)",
+        r"- \[.\](.*)📅\s?(\d{4}-\d{2}-\d{2})",
         lines
     )
 
@@ -60,7 +60,6 @@ def check_notifications(server, filename: str):
     os.remove(tmp_file_name)
 
 look_dirs(root_dir)
-
 # print(notfications)
 
 # Sending messages via Telegram
