@@ -55,3 +55,9 @@ class Client:
         current = 0
 
 ```
+
+### Crontab example
+
+```bash
+00 7 * * *  echo "$(date --rfc-email) Starting"; cd /srv/obsidian-notifications-bot/src && /srv/obsidian-notifications-bot/.venv/bin/python3 daily.py | tee -a /var/log/obsidian-notifications.log; echo "$(date --rfc-email) Finished with $? code" >> /var/log/obsidian-notifications.log
+```

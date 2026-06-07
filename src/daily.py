@@ -30,7 +30,7 @@ def look_dirs(base_dir: str):
     '''
     Function for recursively looking for .md files in folders
     '''
-    items = vault.list(base_dir)
+    items = vault.list(base_dir)[1:]
     for item in items:
         # item is .md file
         if item[-3::] == '.md':
